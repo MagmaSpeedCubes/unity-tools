@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using TMPro;
 using MagmaLabs.Animation;
 namespace MagmaLabs.UI{
-    [CreateAssetMenu(fileName = "TextMeshMaxUGUI", menuName = "MagmaLabs/UI/TextMeshMaxUGUI", order = 1)]
-public class TextMeshMaxUGUI : TextMeshProUGUI
+    [CreateAssetMenu(fileName = "TMPEnhanced", menuName = "MagmaLabs/UI/TMPEnhanced", order = 1)]
+
+public class TMPEnhanced : TextMeshProUGUI
     {
         public bool m_outlineText;
-        private string fullText;
+        private string fullText = "";
         private float writeOn = 1f;
 
         private void Refresh()
