@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using UnityEngine;
 
-namespace MagmaLabs.Utilities{
+namespace MagmaLabs.Editor{
 [Serializable]
 public struct SerializableDateTime
 {

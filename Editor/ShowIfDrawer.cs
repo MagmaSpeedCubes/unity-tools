@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
-namespace MagmaLabs.Utilities.Editor
+namespace MagmaLabs.Editor
 {
 
 [CustomPropertyDrawer(typeof(ShowIfAttribute))]

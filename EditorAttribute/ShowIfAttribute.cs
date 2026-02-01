@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace MagmaLabs.Utilities.Editor{
+namespace MagmaLabs.Editor{
 public class ShowIfAttribute : PropertyAttribute
 {
     public string conditionField;

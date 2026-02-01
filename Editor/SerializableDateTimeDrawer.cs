@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-namespace MagmaLabs.Utilities{
+namespace MagmaLabs.Editor{
 
 [CustomPropertyDrawer(typeof(SerializableDateTime))]
 public class SerializableDateTimeDrawer : PropertyDrawer

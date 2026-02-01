@@ -30,6 +30,18 @@ public static string CamelCaseToWords(string input)
     return sb.ToString();
 }
 
+public static string extractBetween(string source, string startToken, string endToken, int fromIndex)
+        {
+            int startIndex = source.IndexOf(startToken, fromIndex);
+            if(startIndex==-1){return null;}
+            int endIndex = source.IndexOf(endToken, startIndex+1);
+            if(endIndex==-1){return null;}
+
+            return source.Substring(startIndex + startToken.Length , endIndex);
+
+
+        }
+
 }
 
 }
