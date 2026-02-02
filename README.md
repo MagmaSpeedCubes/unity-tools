@@ -2,7 +2,7 @@
 
 This is a template for documenting C# classes, methods, and other code elements. Replace the placeholders with actual information about your C# code. Notes on what to edit are provided in [brackets].
 
-## Class [TMPEnhanced](./TMPEnhanced.md)
+## Namespace [MagmaLabs.UI](./Documentation/UI.md)
 
 ### Description
 An enhanced version of TextMeshPro with built in write on and other animations
