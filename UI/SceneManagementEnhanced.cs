@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using System.Collections.Generic;
-namespace MagmaLabs.UI{
+namespace MagmaLabs.SceneManagement{
     
     public class SceneManagerEnhanced : MonoBehaviour
     {
@@ -17,7 +17,7 @@ namespace MagmaLabs.UI{
 
         }
 
-        public void LoadScreenWithLoadingScreen(string scene, Canvas fromCanvas, Canvas loadCanvas, Canvas toCanvas, float duration)
+        public void LoadSceneWithLoadingScreen(string scene, Canvas fromCanvas, Canvas loadCanvas, Canvas toCanvas, float duration)
         {
             StartCoroutine(LoadSceneWithLoadingScreenCoroutine(scene, fromCanvas, loadCanvas, toCanvas, duration));
         }
