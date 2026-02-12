@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using System;
 using MagmaLabs.Animation;
 using MagmaLabs.Editor;
 using MagmaLabs.Utilities;
@@ -10,7 +11,7 @@ namespace MagmaLabs.UI{
 
 public class TMPEnhanced : TextMeshProUGUI
     {
-        private static readonly int DEBUG_INFO_LEVEL = 2;
+        // Removed debug level to reduce logging overhead
         private string fullText = "";
         private int writeOn = 0;
         private bool writeActive = false;
@@ -119,8 +120,6 @@ public class TMPEnhanced : TextMeshProUGUI
 
         public float GetWriteOnNormalized()
         {
-            //DebugEnhanced.LogInfoLevel("GetWriteOnNormalized called: writeOn=" + writeOn + ", fullText.Length=" + fullText.Length, 2, DEBUG_INFO_LEVEL);
-
             if(writeOn==fullText.Length)
             {
                 return 1f;
@@ -160,18 +159,14 @@ public class TMPEnhanced : TextMeshProUGUI
         {
             if(writeActive)
             {
-                DebugEnhanced.LogInfoLevel("WriteLine called but writeActive is true, exiting coroutine", 2, DEBUG_INFO_LEVEL);
                 yield break;
             }
             writeActive = true;
-            DebugEnhanced.LogInfoLevel("Starting WriteLine coroutine", 2, DEBUG_INFO_LEVEL);
             int lineEndIndex = Mathf.Clamp(fullText.IndexOf('\n', writeOn + 1), 0, fullText.Length); //the +1 ensures the newline is included
-            DebugEnhanced.LogInfoLevel("Line end index: " + lineEndIndex, 2, DEBUG_INFO_LEVEL);
 
             if (lineEndIndex == -1)
             {
                 lineEndIndex = fullText.Length;
-                DebugEnhanced.LogInfoLevel("No newline found, setting line end index to full text length: " + lineEndIndex, 2, DEBUG_INFO_LEVEL);
             }
 
             int startWriteOn = writeOn;
@@ -186,10 +181,7 @@ public class TMPEnhanced : TextMeshProUGUI
                 yield return null;
             }
             writeOn = targetWriteOn;
-            DebugEnhanced.LogInfoLevel("Final writeOn set to target: " + writeOn, 2, DEBUG_INFO_LEVEL);
             Refresh();
-
-            DebugEnhanced.LogInfoLevel("WriteLine coroutine complete", 2, DEBUG_INFO_LEVEL);
             writeActive = false;
 
         }
@@ -203,18 +195,14 @@ public class TMPEnhanced : TextMeshProUGUI
         {
             if(writeActive)
             {
-                DebugEnhanced.LogInfoLevel("WriteLine called but writeActive is true, exiting coroutine", 2, DEBUG_INFO_LEVEL);
                 yield break;
             }
             writeActive = true;
-            DebugEnhanced.LogInfoLevel("Starting WriteLine coroutine", 2, DEBUG_INFO_LEVEL);
             int lineEndIndex = Mathf.Clamp(fullText.IndexOf('\n', writeOn + 1), 0, fullText.Length); //the +1 ensures the newline is included
-            DebugEnhanced.LogInfoLevel("Line end index: " + lineEndIndex, 2, DEBUG_INFO_LEVEL);
 
             if (lineEndIndex == -1)
             {
                 lineEndIndex = fullText.Length;
-                DebugEnhanced.LogInfoLevel("No newline found, setting line end index to full text length: " + lineEndIndex, 2, DEBUG_INFO_LEVEL);
             }
 
             int startWriteOn = writeOn;
@@ -229,10 +217,7 @@ public class TMPEnhanced : TextMeshProUGUI
                 yield return null;
             }
             writeOn = targetWriteOn;
-            DebugEnhanced.LogInfoLevel("Final writeOn set to target: " + writeOn, 2, DEBUG_INFO_LEVEL);
             Refresh();
-
-            DebugEnhanced.LogInfoLevel("WriteLine coroutine complete", 2, DEBUG_INFO_LEVEL);
             writeActive = false;
 
         }
@@ -247,6 +232,44 @@ public class TMPEnhanced : TextMeshProUGUI
         {
             GameObject go = this.gameObject;
             yield return AnimationManager.instance.PopOut(go, undershoot, duration);
+        }
+
+        public IEnumerator CountDouble(double value, int decimalPlaces, float duration){
+            double beginValue;
+            if (!double.TryParse(GetFullText(), out beginValue)){
+                beginValue = 0;
+            }
+            
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float prog = elapsedTime/duration;
+                double mid = ((value*prog + beginValue*(1-prog))/duration);
+                double rounded = Math.Round(mid, decimalPlaces);
+                SetText(""+rounded);
+                yield return null;
+            }
+            SetText(""+value);
+        }
+
+        public IEnumerator CountLong(long value, float duration){
+            long beginValue;
+            if (!long.TryParse(GetFullText(), out beginValue)){
+                beginValue = 0;
+            }
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float prog = elapsedTime/duration;
+                long mid = (long)((value*prog + beginValue*(1-prog))/duration);
+                SetText(""+mid);
+                yield return null;
+            }
+            SetText(""+value);
         }
 
 

@@ -1,28 +1,34 @@
-using UnityEngine;
+
+using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 
+using UnityEngine;
+
 using MagmaLabs.Editor;
-using System.Threading;
 using MagmaLabs.Utilities.Primitives;
 using MagmaLabs.Economy.Security;
-using System;
+using MagmaLabs;
+
 namespace MagmaLabs.Economy{
+    [System.Serializable]
     [CreateAssetMenu(menuName = "MagmaLabs/Economy/ProgressionNode")]
     public class ProgressionNode : Savable
     {
-
+        const int DEBUG_INFO_LEVEL = 2;
+        public static List<ProgressionNode> allNodes = new List<ProgressionNode>();
         public string id { get; private set; }
-        [SerializeField] private NodeStatus status;
+        public NodeStatus status;
         [SerializeField] private bool usePrerequisitesInsteadOfContinuations = false;
 
         [ShowIf("usePrerequisitesInsteadOfContinuations", false)]
-        [SerializeField] private List<ProgressionNode> continuationNodes = new List<ProgressionNode>();
+        public List<ProgressionNode> continuationNodes  = new List<ProgressionNode>();
 
         [ShowIf("usePrerequisitesInsteadOfContinuations", true)]
-        [SerializeField] private List<ProgressionNode> prerequisiteNodes = new List<ProgressionNode>();
+        public List<ProgressionNode> prerequisiteNodes  = new List<ProgressionNode>();
 
-        [SerializeField] private List<ProgressionNode> mutuallyExclusiveNodes = new List<ProgressionNode>();
+        public List<ProgressionNode> mutuallyExclusiveNodes  = new List<ProgressionNode>();
 
         static readonly string[] INVALID_NAMES = {"id=", "status="};
 
@@ -31,21 +37,32 @@ namespace MagmaLabs.Economy{
             LoadFromSerialized(serialized);
         }
 
-        void Awake()
-        {
+        void OnEnable()
+        {   
+            allNodes.Add(this);
+            RefreshInstance();
         }
-        void Start()
+
+        public static void Refresh()
         {
-            
-            if(status == NodeStatus.Unlocked)
-            {
-                ContinuationUnlock();
+            foreach(ProgressionNode node in allNodes){
+                node.RefreshInstance();
             }
-            if(status == NodeStatus.Activated)
+        }
+        public void RefreshInstance()
+        {
+            DebugEnhanced.LogInfoLevel("Refreshing", 1, DEBUG_INFO_LEVEL);
+            if (status == NodeStatus.Activated)
             {
+                DebugEnhanced.LogInfoLevel("Activated", 2, DEBUG_INFO_LEVEL);
                 foreach(ProgressionNode cont in continuationNodes)
                 {
-                    PrerequisiteUnlock();
+                    DebugEnhanced.LogInfoLevel("Trying to unlock continuation", 2, DEBUG_INFO_LEVEL);
+                    cont.TryUnlock(this);
+                }
+                foreach(ProgressionNode mutex in mutuallyExclusiveNodes)
+                {
+                    mutex.TryLock(this);
                 }
             }
         }
@@ -62,6 +79,10 @@ namespace MagmaLabs.Economy{
                     SecureProfileStats.instance.SaveString(id, serialized);
                 }
             
+        }
+        public void Save(){
+            string serialized = Serialize();
+            SecureProfileStats.instance.SaveString(id, serialized);
         }
         void LateLoadFromID(string id)
         {
@@ -103,46 +124,69 @@ namespace MagmaLabs.Economy{
 
             id = Strings.extractBetween(localSegment, "id=", ""+UNIT_SEPARATOR, 0);
             string unparsedStatus = Strings.extractBetween(localSegment, "status=", ""+UNIT_SEPARATOR, 0);
+            NodeStatus temp;
 
-            Enum.TryParse<NodeStatus>(unparsedStatus, out status);
+            Enum.TryParse<NodeStatus>(unparsedStatus, out temp);
+            status = temp;
 
             return localSerialized.Substring(secondLocalSeparator);
             
 
         }
-        public void PrerequisiteUnlock()
-        {
-            foreach(ProgressionNode prereq in prerequisiteNodes){
-                if(prereq.status != NodeStatus.Activated)
-                {
-                    return;
-                    //if a single prerequisite is missing, ProgressionNode cannot unlock
-                }
-            }
-            if(status == NodeStatus.Locked)
-            {
-                status = NodeStatus.Unlocked;
-            }
-        }
-        public void ContinuationUnlock()
-        {
-            if(status == NodeStatus.Locked)
-            {
-                status = NodeStatus.Unlocked;
-            }
-        }
+
         public void Lock()
         {
-            if(status != NodeStatus.Locked)
-            {
-                status = NodeStatus.Locked;
-            }
+            status = NodeStatus.Locked;
+
         } 
+
+        public bool TryUnlock(ProgressionNode source)
+        {
+            if (source.status == NodeStatus.Activated && status == NodeStatus.Locked)
+            {
+                if (UsesPrerequisites())
+                {
+                    foreach(ProgressionNode prereq in prerequisiteNodes)
+                    {
+                        if(prereq.status != NodeStatus.Activated){return false;}
+                    }
+                    status = NodeStatus.Unlocked;
+                    return true;
+                }
+                else
+                {
+                    if (source.continuationNodes.IndexOf(this) != -1)
+                    {
+                        status = NodeStatus.Unlocked;
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public bool TryLock(ProgressionNode source)
+        {
+            if (source.status == NodeStatus.Activated && source.mutuallyExclusiveNodes.IndexOf(this)!=-1){}
+            {
+                Lock();
+                return true;
+            }
+            return false;
+        }
+        public void Activate()
+        {
+            status = NodeStatus.Activated;
+            foreach(ProgressionNode cont in continuationNodes)
+            {
+                cont.TryUnlock(this);
+            }
+        }
         public bool UsesPrerequisites()
         {
             return usePrerequisitesInsteadOfContinuations;
         }
-
+        
 
     }
 

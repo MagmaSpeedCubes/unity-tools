@@ -8,6 +8,18 @@ namespace MagmaLabs.SceneManagement{
     public class SceneManagerEnhanced : MonoBehaviour
     {
         public static SceneManagerEnhanced instance;
+        void Awake()
+        {
+            if (instance == null)
+            {
+                instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+        }
         public IEnumerator LoadSceneWithLoadingScreenCoroutine(string scene, Canvas fromCanvas, Canvas loadCanvas, Canvas toCanvas, float duration)
         {
             CanvasAnimation.LoadingScreen(fromCanvas, loadCanvas, toCanvas, duration);

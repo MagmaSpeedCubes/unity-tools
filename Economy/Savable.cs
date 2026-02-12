@@ -269,7 +269,7 @@ public class Savable : ScriptableObject
         RECORD_SEPARATOR + sprite.name + 
         RECORD_SEPARATOR + combinedNames + 
         RECORD_SEPARATOR + combinedValues;
-        Debug.Log("Serialized Ownable: " + ToString());
+        //Debug.Log("Serialized Ownable: " + ToString());
         return combined;
 
     }
@@ -281,6 +281,10 @@ public class Savable : ScriptableObject
     /// <param name="value">The value of the tag to add.</param>
     public void AddTag(string label, string value)
     {
+            if (GetTag(label) != null)
+            {
+                throw new ArgumentException("Label " + label + " is already assigned");
+            }
         Tag t = new Tag(label, value);
         tags.Add(t);
     }
@@ -304,7 +308,7 @@ public class Savable : ScriptableObject
                 return t.value;
             }
         }
-        throw new KeyNotFoundException("Tag not found for key " + label);
+        return null;
     }
     /// <summary>
     /// Removes the value associated with a given tag name.
@@ -324,7 +328,7 @@ public class Savable : ScriptableObject
         public float GetFloat(string label)
         {
             string tag = GetTag(label);
-            return float.Parse(label);
+            return float.Parse(tag);
         }
 
 
@@ -347,15 +351,13 @@ public class Savable : ScriptableObject
     [Obsolete("Use SetTag instead")]
     public void ModifyTagValue(string label, string value)
     {
-        foreach(Tag t in tags)
+        if (GetTag(label)!=null)
         {
-            if (t.name.Equals(label))
-            {
-                t.value = value;
-                return;
-            }
-            AddTag(label, value);
+            RemoveTag(label);
         }
+        AddTag(label, value);
+            
+
     }
     public void SetTag(string label, string value)
         {
