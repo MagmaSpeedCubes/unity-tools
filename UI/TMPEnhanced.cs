@@ -11,7 +11,6 @@ namespace MagmaLabs.UI{
 
 public class TMPEnhanced : TextMeshProUGUI
     {
-        // Removed debug level to reduce logging overhead
         private string fullText = "";
         private int writeOn = 0;
         private bool writeActive = false;
