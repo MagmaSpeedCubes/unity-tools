@@ -2,35 +2,40 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Creates wandering behaviour for a CharacterController.
+/// Creates wandering behaviour for a top-down 2D Rigidbody.
 /// </summary>
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class Wander : MonoBehaviour
 {
 	public float speed = 5;
 	public float directionChangeInterval = 1;
 	public float maxHeadingChange = 30;
 
-	CharacterController controller;
+	Rigidbody2D rb;
 	float heading;
-	Vector3 targetRotation;
+	float targetHeading;
 
 	void Awake ()
 	{
-		controller = GetComponent<CharacterController>();
+		rb = GetComponent<Rigidbody2D>();
+		rb.gravityScale = 0f;
 
 		// Set random initial rotation
-		heading = Random.Range(0, 360);
-		transform.eulerAngles = new Vector3(0, heading, 0);
+		heading = Random.Range(0f, 360f);
+		targetHeading = heading;
+		transform.rotation = Quaternion.Euler(0f, 0f, heading);
 
 		StartCoroutine(NewHeading());
 	}
 
-	void Update ()
+	void FixedUpdate ()
 	{
-		transform.eulerAngles = Vector3.Slerp(transform.eulerAngles, targetRotation, Time.deltaTime * directionChangeInterval);
-		var forward = transform.TransformDirection(Vector3.forward);
-		controller.SimpleMove(forward * speed);
+		heading = Mathf.MoveTowardsAngle(heading, targetHeading, directionChangeInterval * Time.fixedDeltaTime * maxHeadingChange);
+		transform.rotation = Quaternion.Euler(0f, 0f, heading);
+
+		float rad = heading * Mathf.Deg2Rad;
+		Vector2 direction = new Vector2(Mathf.Cos(rad), Mathf.Sin(rad));
+		rb.linearVelocity = direction * speed;
 	}
 
 	/// <summary>
@@ -50,9 +55,8 @@ public class Wander : MonoBehaviour
 	/// </summary>
 	void NewHeadingRoutine ()
 	{
-		var floor = Mathf.Clamp(heading - maxHeadingChange, 0, 360);
-		var ceil  = Mathf.Clamp(heading + maxHeadingChange, 0, 360);
-		heading = Random.Range(floor, ceil);
-		targetRotation = new Vector3(0, heading, 0);
+		var floor = heading - maxHeadingChange;
+		var ceil  = heading + maxHeadingChange;
+		targetHeading = Random.Range(floor, ceil);
 	}
 }

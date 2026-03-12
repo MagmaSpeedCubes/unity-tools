@@ -24,6 +24,10 @@ public class SerializableDictionary<T> : IEnumerable<SerializableKeyValue<T>>
     [SerializeField]
     private List<SerializableKeyValue<T>> items = new List<SerializableKeyValue<T>>();
 
+    public SerializableKeyValue<T> ElementAt(int index){
+        return items[index];
+    }
+
     /// <summary>
     /// Gets the value associated with the specified key.
     /// </summary>

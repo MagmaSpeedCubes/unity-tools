@@ -30,11 +30,11 @@ namespace MagmaLabs.Economy{
         public List<ProgressionNode> mutuallyExclusiveNodes  = new List<ProgressionNode>();
         public List<Savable> activationRewards = new List<Savable>();
 
-         public string Serialize()
+         public string ToString()
         {
             return JsonUtility.ToJson(this);
         }
-         public void LoadFromSerialized(string serialized)
+         public void FromString(string serialized)
         {
             JsonUtility.FromJsonOverwrite(serialized, this);
         }

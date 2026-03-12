@@ -47,6 +47,11 @@ namespace MagmaLabs.Economy{
             }
         }
 
+        public void Reset()
+        {
+            saveData = new SaveData("{}");
+        }
+
         public void Save()
         {
             string serialized = saveData.Serialize();
@@ -138,6 +143,8 @@ namespace MagmaLabs.Economy{
         public Dictionary<string, float> saveFloats = new Dictionary<string, float>();
         public Dictionary<string, int> saveInts = new Dictionary<string, int>();
         public Dictionary<string, bool> saveBools = new Dictionary<string, bool>();
+
+        public SaveData(){}
 
         public SaveData(string serialized)
         {

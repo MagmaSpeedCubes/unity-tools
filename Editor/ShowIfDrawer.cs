@@ -11,9 +11,9 @@ public class ShowIfDrawer : PropertyDrawer
     {
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            Debug.Log($"ShowIfDrawer.GetPropertyHeight for '{property.propertyPath}'");
+            //Debug.Log($"ShowIfDrawer.GetPropertyHeight for '{property.propertyPath}'");
             bool show = ShouldShow(property);
-            Debug.Log($" ShowIfDrawer:GetPropertyHeight -> {show}");
+            //Debug.Log($" ShowIfDrawer:GetPropertyHeight -> {show}");
             return show 
                 ? EditorGUI.GetPropertyHeight(property, label, true)
                 : 0;
@@ -21,7 +21,7 @@ public class ShowIfDrawer : PropertyDrawer
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            Debug.Log($"ShowIfDrawer.OnGUI for '{property.propertyPath}'");
+            //Debug.Log($"ShowIfDrawer.OnGUI for '{property.propertyPath}'");
             if (ShouldShow(property))
                 EditorGUI.PropertyField(position, property, label, true);
         }
@@ -44,15 +44,15 @@ public class ShowIfDrawer : PropertyDrawer
             var showIf = (ShowIfAttribute)attribute;
 
             // debug: investigate why ShowIf sometimes misbehaves
-            Debug.Log($"ShowIfDrawer: evaluating '{property.propertyPath}' cond='{showIf.conditionField}' compare='{showIf.compareValue}'");
+            //Debug.Log($"ShowIfDrawer: evaluating '{property.propertyPath}' cond='{showIf.conditionField}' compare='{showIf.compareValue}'");
 
             SerializedProperty condition =
                 property.serializedObject.FindProperty(showIf.conditionField);
-            Debug.Log($"ShowIfDrawer: FindProperty('{showIf.conditionField}') returned {condition}");
+            //Debug.Log($"ShowIfDrawer: FindProperty('{showIf.conditionField}') returned {condition}");
 
             if (condition == null)
             {
-                Debug.LogError($"ShowIf: Field '{showIf.conditionField}' not found.");
+                //Debug.LogError($"ShowIf: Field '{showIf.conditionField}' not found.");
                 return true;
             }
 
