@@ -1,8 +1,15 @@
 using UnityEngine;
-namespace MagmaLabs.Utilities.Numerics{
+namespace MagmaLabs{
 
 public static class Numerics
 {
+
+    public static bool InBound(float value, float target, float tolerance)
+        {
+            float min = target - tolerance;
+            float max = target + tolerance;
+            return value>=min&&value<=max;
+        }
     public static int Fibonacci(int n)
     {
         if (n <= 0) return 0;

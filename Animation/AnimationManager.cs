@@ -1,11 +1,12 @@
 using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
-using MagmaLabs.Animation;
 
 
-public class AnimationManager : MonoBehaviour
+namespace MagmaLabs.Animation{
+public class Animations : MonoBehaviour
 {
-    public static AnimationManager instance;
+    public static Animations instance;
 
     void Awake()
     {
@@ -16,7 +17,7 @@ public class AnimationManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Multiple instances of AnimationManager detected. Destroying duplicate.");
+            Debug.LogWarning("Multiple instances of Animation detected. Destroying duplicate.");
         }
     }
 
@@ -162,20 +163,18 @@ public class AnimationManager : MonoBehaviour
         subject.GetComponent<CanvasGroup>().alpha = endAlpha;
     }
 
-    public IEnumerator FadeSprite(GameObject subject, float startAlpha, float endAlpha, float duration)
-    {
-        float elapsedTime = 0f;
-        while (elapsedTime < duration)
-        {
 
-            Color oc = subject.GetComponent<SpriteRenderer>().color;
-            float alpha = alpha = Mathf.Lerp(startAlpha, endAlpha, Easing.EaseInOutCubic(elapsedTime / duration));
-            Color nc = new Color(oc.r, oc.g, oc.b, alpha);
-            subject.GetComponent<SpriteRenderer>().color = nc;
 
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        subject.GetComponent<CanvasGroup>().alpha = endAlpha;
-    }
+}
+
+public class AnimationManager : Animations{}
+
+}
+
+public enum Animation
+{
+    None,
+    Fade,
+    Pop, 
+    Slide
 }

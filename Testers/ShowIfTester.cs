@@ -1,6 +1,6 @@
 using UnityEngine;
 
-using MagmaLabs.Editor;
+using MagmaLabs;
 public class ShowIfTester : MonoBehaviour
 {
     [SerializeField]private bool mainToggle;

@@ -1,7 +1,7 @@
 using UnityEngine;
 
 using MagmaLabs.Economy;
-using MagmaLabs.Editor;
+using MagmaLabs;
 [RequireComponent(typeof(SaveManager))]
 public class SaveTester : MonoBehaviour
 {

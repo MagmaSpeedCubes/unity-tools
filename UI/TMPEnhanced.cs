@@ -1,11 +1,15 @@
-using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using UnityEngine;
+using UnityEngine.Events;
 using TMPro;
-using System;
+
 using MagmaLabs.Animation;
-using MagmaLabs.Editor;
 using MagmaLabs.Utilities;
+using MagmaLabs;
+
 namespace MagmaLabs.UI{
     [CreateAssetMenu(fileName = "TMPEnhanced", menuName = "MagmaLabs/UI/TMPEnhanced", order = 1)]
 
@@ -14,6 +18,10 @@ public class TMPEnhanced : TextMeshProUGUI
         private string fullText = "";
         private int writeOn = 0;
         private bool writeActive = false;
+        private AnimationCurve animationCurve = AnimationCurve.Linear(0,0,1,1);
+
+        public UnityEvent<string> OnValueChanged;
+        public UnityEvent OnAnimationComplete;
 
         void Start()
         {
@@ -64,6 +72,12 @@ public class TMPEnhanced : TextMeshProUGUI
             fullText = text;
             writeOn = fullText.Length;
             Refresh();
+        }
+
+        public void SetHiddenText(string text)
+        {
+            SetText(text);
+            HideText();
         }
         public void AddText(string text)
         {
@@ -126,7 +140,7 @@ public class TMPEnhanced : TextMeshProUGUI
             return (float)writeOn / fullText.Length;
         }
 
-        public IEnumerator WriteOn(int targetWriteOn, float duration)
+        public IEnumerator WriteOn(float targetWriteOn, float duration)
         {
             if(writeActive)
             {
@@ -145,6 +159,29 @@ public class TMPEnhanced : TextMeshProUGUI
                 yield return null;
             }
             writeOn = (int)targetWriteOn;
+            Refresh();
+            writeActive = false;
+        }
+
+        public IEnumerator WriteOnNormalized(float targetWriteOn, float duration)
+        {
+            if(writeActive)
+            {
+                yield break;
+            }
+            writeActive = true;
+
+            float startWriteOn = writeOn;
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                float newWriteOn = Mathf.Lerp(startWriteOn, targetWriteOn, elapsedTime / duration);
+                SetWriteOnNormalized(newWriteOn);
+                yield return null;
+            }
+            SetWriteOnNormalized(targetWriteOn);
             Refresh();
             writeActive = false;
         }
@@ -271,8 +308,22 @@ public class TMPEnhanced : TextMeshProUGUI
             SetText(""+value);
         }
 
+        public void SetAnimationCurve(AnimationCurve curve)
+        {
+            animationCurve = curve;
+        }
+
+        public void StopAnimation()
+        {
+            StopAllCoroutines();
+        }
+
+
+
 
     }
+
+
 
 
 }

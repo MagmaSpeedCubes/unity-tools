@@ -1,12 +1,16 @@
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.SocialPlatforms;
 
-using MagmaLabs.Editor;
+using MagmaLabs;
+
 
 namespace MagmaLabs.Economy{
     public class SaveManager : MonoBehaviour
     {
+        public string playerID { get; private set; }
+        public string deviceID { get; private set; }
         [SerializeField] protected string fileName = "saveData.json";
         [SerializeField] protected bool autoSave = true;
         [ShowIf("autoSave", true)]
@@ -18,6 +22,8 @@ namespace MagmaLabs.Economy{
         public SaveData saveData { get; private set; }
         
         private string filePath => System.IO.Path.Combine(Application.persistentDataPath, fileName);
+
+
 
         void Awake()
         {
@@ -43,6 +49,18 @@ namespace MagmaLabs.Economy{
             {
                 InvokeRepeating(nameof(Save), autoSaveInterval, autoSaveInterval);
             }
+        }
+
+        void Start()
+        {
+            playerID = GameCenterBridge.playerID;
+            deviceID = GameCenterBridge.deviceID;
+
+        }
+
+        public void Reset()
+        {
+            saveData = new SaveData("{}");
         }
 
         public void Save()
@@ -118,23 +136,13 @@ namespace MagmaLabs.Economy{
                 return saveData.saveBools.ContainsKey(key) ? saveData.saveBools[key] : defaultValue;
             }
     
+    
+    
     }
 
 
 
-    [System.Serializable]
-    public class SerializableKeyValue<T>
-    {
-        public string key;
-        public T value;
-        
-        public SerializableKeyValue() { }
-        public SerializableKeyValue(string key, T value)
-        {
-            this.key = key;
-            this.value = value;
-        }
-    }
+
 
     [System.Serializable]
     public class SaveData 
@@ -148,6 +156,8 @@ namespace MagmaLabs.Economy{
         public Dictionary<string, float> saveFloats = new Dictionary<string, float>();
         public Dictionary<string, int> saveInts = new Dictionary<string, int>();
         public Dictionary<string, bool> saveBools = new Dictionary<string, bool>();
+
+        public SaveData(){}
 
         public SaveData(string serialized)
         {
